@@ -1,0 +1,26 @@
+# depslib dependency file v1.0
+1518446871 source:c:\users\dany corbineau\documents\programmation maison\c\dany-corbineau-ynov-01-12-02-2018\main.cpp
+	<iostream>
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<time.h>
+	"Joueur.h"
+	"Monstre.h"
+
+1518446144 source:c:\users\dany corbineau\documents\programmation maison\c\dany-corbineau-ynov-01-12-02-2018\src\monstre.cpp
+	"Monstre.h"
+
+1518444942 c:\users\dany corbineau\documents\programmation maison\c\dany-corbineau-ynov-01-12-02-2018\include\monstre.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+
+1518446120 source:c:\users\dany corbineau\documents\programmation maison\c\dany-corbineau-ynov-01-12-02-2018\src\joueur.cpp
+	"Joueur.h"
+
+1518445508 c:\users\dany corbineau\documents\programmation maison\c\dany-corbineau-ynov-01-12-02-2018\include\joueur.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+
