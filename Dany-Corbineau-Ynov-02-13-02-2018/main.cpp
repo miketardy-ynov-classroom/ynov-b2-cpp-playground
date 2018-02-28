@@ -29,19 +29,34 @@ int main ( int argc, char** argv )
                 looping=false;
             }
             else if(event.type==SDL_MOUSEBUTTONDOWN){
-                char pathName[512]="\\bin";
-
-
-                if(strcmp("..",pathName)==0 &&strlen(startPath)>3){
-                    startPath[strlen(startPath)-1]=0;
-                    for(int j=strlen(startPath)-1;j>0;--j){
-                        if(startPath[j]=='\\')
-                            break;
-                        startPath[j]=0;
+                char pathName[512];
+                int dirValue=getDirOnClic(dd,nbDir,event.button.x,event.button.y);
+                printf("Last Path : %s ",startPath);
+                if(dirValue>=0){
+                    strcpy(pathName,dd[dirValue].name);
+                    if(strcmp("..",pathName)==0 &&strlen(startPath)>3){
+                        startPath[strlen(startPath)-1]=0;
+                        for(int j=strlen(startPath)-1;j>0;--j){
+                            if(startPath[j]=='\\')
+                                break;
+                            startPath[j]=0;
+                        }
                     }
+                    else{
+                        if(startPath[strlen(startPath)-1]=='\\')
+                            startPath[strlen(startPath)-1]=0;
+                        sprintf(startPath,"%s%c%s",startPath,'\\',pathName);
+                    }
+                    printf(" new Path : %s \n",startPath);
+                    e->vider_ecran();
+                    e->matrice_2d();
+
+                    tracer_rectangle(0,0,SCREEN_X,SCREEN_Y,255,255,255);
+
+                    e->aff_ecran();
+                    reactualiserDossier(startPath,dd,textures,&nbDir,police);
+
                 }
-                printf("%s\n",startPath);
-                reactualiserDossier(startPath,dd,textures,&nbDir,police);
             }
         }
 
@@ -79,14 +94,16 @@ int getDirData(string path,DirData * &dd){
     struct stat st;
 
     while( (d=readdir(racine)) ){
-        char newPath[512];
-        sprintf(newPath,"%s\\%s",path.c_str(),d->d_name);
-        stat(newPath, &st);
+        if(strcmp(d->d_name,".")!=0){
+            char newPath[512];
+            sprintf(newPath,"%s\\%s",path.c_str(),d->d_name);
+            stat(newPath, &st);
 
-        dd=(DirData*)realloc(dd,sizeof(DirData)*(j+1));
-        dd[j].d_size=getFileSize(newPath);
-        strcpy(dd[j].name,d->d_name);
-        ++j;
+            dd=(DirData*)realloc(dd,sizeof(DirData)*(j+1));
+            dd[j].d_size=getFileSize(newPath);
+            strcpy(dd[j].name,d->d_name);
+            ++j;
+        }
     }
     return j;
 }
@@ -121,19 +138,18 @@ DirTextureText *generateTexturs(TTF_Font *police,DirData *dd, int nbDir ){
 
 void afficherDossierEtFichier(DirTextureText *t,DirData *data, int nbDir ){
     int nbDirectory=countNbDir(data,nbDir);
-    nbDirectory+=2;
-    const int colormax=16777215;
+    nbDirectory+=1;
     long long filesSize=getTotalFileSize(data,nbDir);
     int deplacement=0;
 
     for(int j=0,k=0,l=0;j<nbDir;++j){
         if(isDir(data[j].name) || strcmp(data[j].name,".")==0 || strcmp(data[j].name,"..")==0){
-            tracer_rectangle(0,k*SCREEN_Y/nbDirectory,SCREEN_X/2,SCREEN_Y/nbDirectory,128+(j*(int)pow(2,8*3)/2/nbDir)/255/255%128,128+(j*(int)pow(2,8*3)/2/nbDir)%128,128+(j*(int)pow(2,8*3)/2/nbDir)/255%128);
+            tracer_rectangle(0,k*SCREEN_Y/nbDirectory,SCREEN_X/2,SCREEN_Y/nbDirectory+1,128+(j*(int)pow(2,8*3)/2/nbDir)/255/255%128,128+(j*(int)pow(2,8*3)/2/nbDir)%128,128+(j*(int)pow(2,8*3)/2/nbDir)/255%128);
             tracer_rectangle_texture(0,k*SCREEN_Y/nbDirectory,  t[j].x*32/t[j].y,   32,   t[j].id);
             ++k;
         }
         else{
-            tracer_rectangle(SCREEN_X/2,deplacement,SCREEN_X/2,data[j].d_size*SCREEN_Y/filesSize,128+(j*(int)pow(2,8*3)/2/nbDir)/255/255%128,128+(j*(int)pow(2,8*3)/2/nbDir)%128,128+(j*(int)pow(2,8*3)/2/nbDir)/255%128);
+            tracer_rectangle(SCREEN_X/2,deplacement,SCREEN_X/2,data[j].d_size*SCREEN_Y/filesSize,128,255-(data[j].d_size*128/filesSize),128+(data[j].d_size*128/filesSize));
             if(data[j].d_size*SCREEN_Y/filesSize>32)
                 tracer_rectangle_texture(SCREEN_X/2,deplacement,  t[j].x*32/t[j].y,   32,   t[j].id);
             else
@@ -170,4 +186,24 @@ long long getTotalFileSize(DirData *data, int nbDir){
             ret+=data[j].d_size;
     return ret;
 }
+
+int getDirOnClic(DirData *data, int nbDir,int cX,int cY){
+    int ret=-1;
+    int nbDirectory=countNbDir(data,nbDir);
+    nbDirectory+=1;
+
+    if(cX<SCREEN_X/2){
+        for(int j=0,k=0;j<nbDir;++j){
+            if(isDir(data[j].name)==1 || strcmp(data[j].name,"..")==0){
+                if(cY>k*SCREEN_Y/nbDirectory && cY<(k+1)*SCREEN_Y/nbDirectory)
+                    return j;
+                ++k;
+            }
+        }
+    }
+    return ret;
+}
+
+
+
 

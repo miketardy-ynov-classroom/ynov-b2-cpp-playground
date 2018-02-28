@@ -47,4 +47,6 @@ void afficherDossierEtFichier(DirTextureText *t,DirData *data, int nbDir );
 long long getTotalFileSize(DirData *data, int nbDir);
 void reactualiserDossier(char *path,DirData *&data,DirTextureText *&t,int *nbDir, TTF_Font *police);
 
+int getDirOnClic(DirData *data, int nbDir,int cX,int cY);
+
 #endif // MAIN_HEADER_H_INCLUDED
