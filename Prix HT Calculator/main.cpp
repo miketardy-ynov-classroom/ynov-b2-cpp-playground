@@ -6,6 +6,8 @@ int main()
 {
     float prixArticle = 0;
     float TVAPercentage = 0;
+    string test = "oui";
+    char chartest = "c";
 
     cout << "Entrer le prix de votre article en euro" << endl;
     cin >> prixArticle;
